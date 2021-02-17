@@ -1,19 +1,40 @@
-import java.util.ArrayList;
-import java.util.List;
+
+import java.sql.*;
 
 
 public class CitiesService {
 
-    List<String> citiesList = new ArrayList<String>();
 
-    public void addCity(City city) {
-        citiesList.add(city.name);
+   private Connection connection;
+
+    CitiesService(Connection connection){
+        this.connection = connection;
     }
-    public List<String> getCities(){
-        for (String nameOfCity:citiesList){
-            citiesList.listIterator(0);
+
+
+    public void addCity(City city) throws SQLException {
+
+
+            Statement statement = connection.createStatement();
+            statement.setQueryTimeout(30);
+
+            statement.executeUpdate("create table if not exists cities(id text primary key, name text unique)");
+
+            statement.executeUpdate("insert into cities values('" + city.id + "', '" + city.name + "');");
+
+    }
+
+        public void getCity () throws SQLException {
+
+                Statement statement = connection.createStatement();
+                statement.setQueryTimeout(30);
+                ResultSet rs = statement.executeQuery("select * from cities");
+                while (rs.next()) {
+                    // read the result set
+                    System.out.println("name = " + rs.getString("name"));
+                    System.out.println("id = " + rs.getInt("id"));
+                }
+
         }
-
-        return citiesList;
     }
-}
+
